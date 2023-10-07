@@ -5,6 +5,8 @@ import { redirect } from 'next/navigation';
 import NewTweet from './new-tweet';
 import Tweets from './tweets';
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   const supabase = createServerComponentClient<Database>({ cookies })
   const {data:{ session }} = await supabase.auth.getSession()
@@ -13,7 +15,8 @@ if(!session){
 }
 
   const { data } = await supabase.from('tweets').
-  select("*, author: profiles(*), likes(user_id)");
+  select("*, author: profiles(*), likes(user_id)")
+  .order('created_at', {ascending:false});
 
 const tweets  = data?.map(tweet => ({
   ...tweet,
